@@ -1,13 +1,12 @@
 import { Telegraf } from 'telegraf';
-import LocalSession from 'telegraf-session-local';
+import { VK } from 'vk-io';
+import { WallWallpostAttachment, WallWallpostFull } from 'vk-io/lib/api/schemas/objects';
+import { PhotosGetResponse, WallGetResponse } from 'vk-io/lib/api/schemas/responses';
 import { Command } from './commands/telegram/command.class';
+import { StartCommand } from './commands/telegram/start.command';
 import { IConfigService } from './config/config.interface';
 import { ConfigService } from './config/config.service';
 import { IBotContext } from './context/context.interface';
-import { StartCommand } from './commands/telegram/start.command';
-import { VK } from 'vk-io';
-import { WallGetResponse } from 'vk-io/lib/api/schemas/responses';
-import { WallWallpostFull } from 'vk-io/lib/api/schemas/objects';
 
 class Bot {
   bot: Telegraf<IBotContext>;
@@ -18,26 +17,52 @@ class Bot {
     this.vk = new VK({ token: this.configService.get('VK_TOKEN') });
     // this.bot.use(new LocalSession({ database: 'session.json' }).middleware());
   }
+  // import axios from 'axios';
 
+  // const access_token = 'your_access_token';
+  // const owner_id = 'owner_id';
+  // const count = 10;
+  // const today = new Date();
+  // const unixtime = Math.floor(today.getTime() / 1000);
+
+  // const url = `https://api.vk.com/method/wall.get?owner_id=${owner_id}&count=${count}&filter=owner&start_time=${unixtime}&access_token=${access_token}&v=5.131`;
+
+  // axios.get(url)
+  //   .then(response => {
+  //     console.log(response.data.response.items);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
   async init() {
     this.commands = [new StartCommand(this.bot)];
 
     const dodzoWall: WallGetResponse = await this.vk.api.wall.get({ count: 10, owner_id: -198384075 });
-    const targetPostsDodzo = dodzoWall.items.find((item: WallWallpostFull) => item.text?.includes('Меню бизнес-ланча'));
-    const targetAttachments = targetPostsDodzo?.attachments;
+    console.log('🚀  dodzoWall:', dodzoWall);
+    const targetPostsDodzo = dodzoWall.items.find((item: WallWallpostFull) => item.text.includes('Меню бизнес-ланча'));
+    const targetAttachments = targetPostsDodzo.attachments;
 
-    const photoIds = [];
+    for (const post of dodzoWall.items) {
+      // console.log('🚀  attachment.photo:', attachment.photo.sizes);
+      post.date;
+      console.log('🚀  post.date:', post.date);
+      const dateNow = new Date();
 
-    for (const attachment of targetAttachments || [{ photo: { id: 0 } }]) {
-      photoIds.push(attachment?.photo.id.toString());
+      console.log('🚀  new Date(post.date):', new Date(post.date - Number(dateNow)).getDay());
+      new Date(post.date || '');
     }
 
-    console.log('🚀  photos:', photoIds);
+    const photoIds = [];
+    let count = 0;
+    for (const attachment of targetAttachments) {
+      console.log('count', (count += 1));
+      // console.log('🚀  attachment.photo:', attachment.photo.sizes);
+      photoIds.push(attachment.photo);
+    }
 
-    const photoUrls = await this.vk.api.photos.get({ photo_ids: photoIds, album_id: '-198384075' });
-    console.log('🚀  photoUrls:', photoUrls);
+    // console.log('🚀  photoIds:', photoIds);
 
-    // targetPostsDodzo?.attachments?.forEach((attachment) => {
+    // targetPostsDodzo.attachments.forEach((attachment) => {
     //   console.log(attachment);
     // });
 
