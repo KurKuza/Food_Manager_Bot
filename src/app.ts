@@ -12,7 +12,6 @@ class Bot {
   constructor(private readonly configService: IConfigService, private readonly vkService: VKService) {
     this.bot = new Telegraf<IBotContext>(this.configService.get('BOT_TOKEN'));
     this.vkService = new VKService(this.configService);
-    // this.bot.use(new LocalSession({ database: 'session.json' }).middleware());
   }
 
   async init() {
