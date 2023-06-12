@@ -1,7 +1,7 @@
 import { Telegraf } from 'telegraf';
-import LocalSession from 'telegraf-session-local';
-import { Command } from './commands/command.class';
-import { StartCommand } from './commands/start.command';
+import { Command } from './commands/telegram/command.class';
+import { StartCommand } from './commands/telegram/start.command';
+import { VKService } from './commands/vk/commands';
 import { IConfigService } from './config/config.interface';
 import { ConfigService } from './config/config.service';
 import { IBotContext } from './context/context.interface';
@@ -9,14 +9,13 @@ import { IBotContext } from './context/context.interface';
 class Bot {
   bot: Telegraf<IBotContext>;
   commands: Command[] = [];
-  constructor(private readonly configService: IConfigService) {
+  constructor(private readonly configService: IConfigService, private readonly vkService: VKService) {
     this.bot = new Telegraf<IBotContext>(this.configService.get('BOT_TOKEN'));
-
-    this.bot.use(new LocalSession({ database: 'session.json' }).middleware());
+    this.vkService = new VKService(this.configService);
   }
 
-  init() {
-    this.commands = [new StartCommand(this.bot)];
+  async init() {
+    this.commands = [new StartCommand(this.bot, this.vkService)];
 
     for (const command of this.commands) {
       command.handle();
@@ -27,5 +26,5 @@ class Bot {
   }
 }
 
-const bot = new Bot(new ConfigService());
+const bot = new Bot(new ConfigService(), new VKService(new ConfigService()));
 bot.init();
