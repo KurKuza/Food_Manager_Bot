@@ -1,9 +1,9 @@
 import { Telegraf } from 'telegraf';
-import { IBotContext } from '../../context/context.interface';
-import { Command } from './command.class';
-import { VKService } from '../vk/commands';
 import { DODZO_OWNER_ID, DODZO_TEXT_SEARCH_INCLUDES } from '../../constants/dodzo';
+import { IBotContext } from '../../context/context.interface';
 import { convertToMediaGroup } from '../../helpers/telegram/convertToMediaGroup';
+import { VKService } from '../vk/commands';
+import { Command } from './command.class';
 
 export class StartCommand extends Command {
   constructor(bot: Telegraf<IBotContext>, vkService: VKService) {
