@@ -6,6 +6,9 @@ import { IConfigService } from './config/config.interface';
 import { ConfigService } from './config/config.service';
 import { IBotContext } from './context/context.interface';
 
+const config = new ConfigService();
+const vkService = new VKService(config);
+
 class Bot {
   bot: Telegraf<IBotContext>;
   commands: Command[] = [];
@@ -26,5 +29,6 @@ class Bot {
   }
 }
 
-const bot = new Bot(new ConfigService(), new VKService(new ConfigService()));
+const bot = new Bot(config, vkService);
+
 bot.init();

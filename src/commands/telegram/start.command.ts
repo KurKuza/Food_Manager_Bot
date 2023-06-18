@@ -11,9 +11,8 @@ export class StartCommand extends Command {
   }
 
   async handle(): Promise<void> {
-    const photos = await this.vkService.getAttachments(DODZO_OWNER_ID, DODZO_TEXT_SEARCH_INCLUDES);
-
     this.bot.command('food', async (ctx) => {
+      const photos = await this.vkService.getAttachments(DODZO_OWNER_ID, DODZO_TEXT_SEARCH_INCLUDES);
       await ctx.sendMediaGroup(convertToMediaGroup(photos));
 
       ctx.sendPoll(
