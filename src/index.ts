@@ -31,4 +31,4 @@ class Bot {
 
 const bot = new Bot(config, vkService);
 
-bot.init();
+module.exports.handler = bot.init();
