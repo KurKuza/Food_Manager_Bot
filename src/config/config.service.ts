@@ -5,9 +5,10 @@ export class ConfigService implements IConfigService {
   private config: DotenvParseOutput;
 
   constructor() {
-    const { error, parsed } = config();
+    let { error, parsed } = config();
+
     if (error) {
-      throw new Error('Error loading .env file');
+      parsed = process.env;
     }
     if (!parsed) {
       throw new Error('Error parsing .env file');
